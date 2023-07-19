@@ -11,28 +11,28 @@ namespace dotnet_rpg.Controllers
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase
     {
-        private static List<Character> characters = new List<Character>() {
-            new Character(),
-            new Character { Id = 1, Name = "Sam" }
-        };
+        private readonly ICharacterService _characterService;
+        public CharacterController(ICharacterService characterService)
+        {
+            _characterService = characterService;
+        }
 
         //GET methods
         //quando vi sono più metodi dello stesso tipo vanno inseriti degli attributi alla radice(url) in modo che possano essere distitnti
         [HttpGet("GetAllCharacter")]
-        public ActionResult<List<Character>> Get() {
-            return Ok(characters);
+        public async Task<ActionResult<List<Character>>> GetAll() {
+            return Ok(await _characterService.GetAllCharacter());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Character> GetSingle(int id) {
-            return Ok(characters.FirstOrDefault(c => c.Id == id));
+        public async Task<ActionResult<Character>> GetSingle(int id) {
+            return Ok(await _characterService.GetCharacterByID(id));
         }
 
         //POST method
         [HttpPost]
-        public ActionResult<List<Character>> AddCharacter(Character newCharacter) {
-            characters.Add(newCharacter);
-            return Ok(characters);
+        public async Task<ActionResult<List<Character>>> AddCharacter(Character newCharacter) {
+            return Ok(await _characterService.AddCharacter(newCharacter));
         }
     }
 }
